@@ -6,10 +6,7 @@ import vtkActor from "vtk.js/Sources/Rendering/Core/Actor";
 import { VTKRendererContext } from "./VTKRenderer";
 import { ModelContext } from "./Model";
 
-export const MarchingCubes: React.FC<{ isoValue: number }> = ({
-  children,
-  isoValue,
-}) => {
+export const MarchingCubes: React.FC<{ isoValue: number }> = ({ isoValue }) => {
   const { renderWindow, renderer } = React.useContext(VTKRendererContext);
   const { modelData, modelReader } = React.useContext(ModelContext);
   const [marchingCube, setMarchingCube] = React.useState<any>();

@@ -7,7 +7,6 @@ import { MarchingCubes } from "./vtk/MarchingCubes";
 import * as S from "./AppStyles";
 
 function App() {
-  const [selectedModel, setSelectedModel] = React.useState<string>("");
   const [isoValue, setIsoValue] = React.useState<number>(1200);
 
   return (
@@ -19,7 +18,6 @@ function App() {
             <Slider
               min={1}
               max={4000}
-              step={1}
               value={isoValue}
               onChange={(e) => {
                 setIsoValue(Number(e.target.value));
