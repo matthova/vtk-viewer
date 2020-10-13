@@ -6,13 +6,12 @@ import vtkActor from "vtk.js/Sources/Rendering/Core/Actor";
 import { VTKRendererContext } from "./VTKRenderer";
 import { ModelContext } from "./Model";
 
-export const MarchingCubes: React.FC = ({ children }) => {
+export const MarchingCubes: React.FC<{ isoValue: number }> = ({
+  children,
+  isoValue,
+}) => {
   const { renderWindow, renderer } = React.useContext(VTKRendererContext);
   const { modelData, modelReader } = React.useContext(ModelContext);
-  const dataRange = modelData?.getPointData().getScalars().getRange();
-  const [isoValue, setIsoValue] = React.useState<number>(
-    dataRange ? (dataRange[0] + dataRange[1]) / 3 : 0
-  );
   const [marchingCube, setMarchingCube] = React.useState<any>();
 
   React.useEffect(() => {
@@ -32,9 +31,6 @@ export const MarchingCubes: React.FC = ({ children }) => {
     ) {
       return;
     }
-    const dataRange = modelData.getPointData().getScalars().getRange();
-    const firstIsoValue = (dataRange[0] + dataRange[1]) / 3;
-    setIsoValue(firstIsoValue);
     const mapper = vtkMapper.newInstance();
     const marchingCube = vtkImageMarchingCubes.newInstance({
       contourValue: 0.0,
@@ -42,7 +38,7 @@ export const MarchingCubes: React.FC = ({ children }) => {
       mergePoints: true,
     });
     marchingCube.setInputConnection(modelReader.getOutputPort());
-    marchingCube.setContourValue(firstIsoValue);
+    marchingCube.setContourValue(isoValue);
     mapper.setInputConnection(marchingCube.getOutputPort());
 
     const actor = vtkActor.newInstance();
@@ -55,23 +51,7 @@ export const MarchingCubes: React.FC = ({ children }) => {
     return () => {
       renderer.removeActor(actor);
     };
-  }, [modelData, modelReader, renderWindow, renderer]);
+  }, [isoValue, modelData, modelReader, renderWindow, renderer]);
 
-  return (
-    <>
-      {children}
-      {dataRange ? (
-        <input
-          type="range"
-          min={dataRange[0]}
-          max={dataRange[1]}
-          value={isoValue}
-          style={{ position: "relative", zIndex: 9999 }}
-          onChange={(e) => {
-            setIsoValue(Number(e.target.value));
-          }}
-        />
-      ) : null}
-    </>
-  );
+  return null;
 };

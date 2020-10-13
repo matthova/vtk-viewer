@@ -1,7 +1,7 @@
 import React from "react";
 import "vtk.js/Sources/favicon";
 
-import vtkFullScreenRenderWindow from "vtk.js/Sources/Rendering/Misc/FullScreenRenderWindow";
+import vtkGenericRenderWindow from "vtk.js/Sources/Rendering/Misc/GenericRenderWindow";
 import { Renderer } from "vtk.js/Sources/Rendering/Core/Renderer";
 import { RenderWindow } from "vtk.js/Sources/Rendering/Core/RenderWindow";
 
@@ -20,16 +20,21 @@ export const VTKRenderer: React.FC = ({ children }) => {
     null
   );
   const [renderer, setRenderer] = React.useState<Renderer | null>(null);
+  const viewRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    const fullScreenRenderWindow = vtkFullScreenRenderWindow.newInstance({
+    // @ts-ignore
+    const genericRenderWindow = vtkGenericRenderWindow.newInstance({
       background: [0, 0, 0],
     });
+    genericRenderWindow.setContainer(viewRef.current);
+    // call resize once to fire a render with the proper resolution
+    genericRenderWindow.resize();
 
-    const renderWindow = fullScreenRenderWindow.getRenderWindow();
+    const renderWindow = genericRenderWindow.getRenderWindow();
     setRenderWindow(renderWindow);
 
-    const renderer = fullScreenRenderWindow.getRenderer();
+    const renderer = genericRenderWindow.getRenderer();
     setRenderer(renderer);
     renderer.getActiveCamera().set({ position: [1, 1, 0], viewUp: [0, 0, -1] });
   }, []);
@@ -37,6 +42,7 @@ export const VTKRenderer: React.FC = ({ children }) => {
   return (
     <VTKRendererContext.Provider value={{ renderer, renderWindow }}>
       {children}
+      <div ref={viewRef} style={{ width: "100%", height: "100%" }} />
     </VTKRendererContext.Provider>
   );
 };
