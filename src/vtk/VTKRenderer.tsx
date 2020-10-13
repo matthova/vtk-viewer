@@ -23,6 +23,9 @@ export const VTKRenderer: React.FC = ({ children }) => {
   const viewRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
+    if (!viewRef.current) {
+      return;
+    }
     // @ts-ignore
     const genericRenderWindow = vtkGenericRenderWindow.newInstance({
       background: [0, 0, 0],
